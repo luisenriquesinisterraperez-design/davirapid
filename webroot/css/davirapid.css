@@ -1,0 +1,299 @@
+/* ============================================================
+   Davi Rapid Admin · Theme + tokens + componentes propios
+   Carga DESPUÉS de bootstrap.min.css y bootstrap-icons.min.css.
+   ============================================================ */
+
+/* ---------- 1. Inter font-face (font-display: swap) ---------- */
+@font-face {
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("/fonts/inter-regular.woff2") format("woff2");
+}
+@font-face {
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url("/fonts/inter-medium.woff2") format("woff2");
+}
+@font-face {
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url("/fonts/inter-semibold.woff2") format("woff2");
+}
+@font-face {
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url("/fonts/inter-bold.woff2") format("woff2");
+}
+
+/* ---------- 2. Tokens (Bootstrap CSS vars + propios) ---------- */
+:root {
+    /* Bootstrap overrides */
+    --bs-primary: #E63027;
+    --bs-primary-rgb: 230, 48, 39;
+    --bs-secondary: #F26B1F;
+    --bs-secondary-rgb: 242, 107, 31;
+    --bs-success: #22A06B;
+    --bs-success-rgb: 34, 160, 107;
+    --bs-warning: #F2A516;
+    --bs-warning-rgb: 242, 165, 22;
+    --bs-danger: #D32F2F;
+    --bs-danger-rgb: 211, 47, 47;
+    --bs-info: #2A6FDB;
+    --bs-info-rgb: 42, 111, 219;
+    --bs-body-bg: #FAFAFA;
+    --bs-body-color: #1F1F1F;
+    --bs-border-color: #E5E5E5;
+    --bs-border-radius: .5rem;
+    --bs-border-radius-sm: .25rem;
+    --bs-border-radius-lg: .75rem;
+    --bs-border-radius-xl: 1rem;
+    --bs-font-sans-serif: "Inter", system-ui, -apple-system, sans-serif;
+    --bs-body-font-family: var(--bs-font-sans-serif);
+    --bs-body-font-size: .9375rem; /* 15px */
+    --bs-body-font-weight: 400;
+    --bs-link-color: #E63027;
+    --bs-link-hover-color: #B32420;
+
+    /* Davi Rapid propios */
+    --dr-primary-soft: #FDE7E5;
+    --dr-secondary-soft: #FDEBDD;
+    --dr-success-soft: #DDF2E8;
+    --dr-warning-soft: #FCEDC9;
+    --dr-danger-soft: #FADBDB;
+    --dr-info-soft: #D9E5F8;
+    --dr-tertiary: #FFB627;
+    --dr-tertiary-soft: #FFF1CE;
+    --dr-surface: #FFFFFF;
+    --dr-surface-alt: #F4F4F4;
+    --dr-overlay: rgba(0, 0, 0, .55);
+    --dr-shadow-2: 0 4px 12px rgba(0, 0, 0, .08);
+    --dr-shadow-3: 0 12px 32px rgba(0, 0, 0, .12);
+    --dr-control-h: 40px;
+    --dr-sidebar-w: 248px;
+    --dr-topbar-h: 64px;
+    --dr-content-max: 1440px;
+    --dr-text-muted: #6B6B6B;
+}
+
+/* ---------- 3. Overrides de componentes Bootstrap ---------- */
+
+body {
+    font-family: var(--bs-font-sans-serif);
+    font-size: var(--bs-body-font-size);
+    color: var(--bs-body-color);
+    background-color: var(--bs-body-bg);
+}
+
+.btn {
+    height: var(--dr-control-h);
+    padding-inline: 1rem;
+    font-weight: 500;
+    line-height: 1;
+    border-radius: var(--bs-border-radius);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+}
+.btn-sm { height: 32px; padding-inline: .75rem; font-size: .8125rem; }
+.btn-icon {
+    height: 36px;
+    width: 36px;
+    padding: 0;
+    border-radius: var(--bs-border-radius);
+}
+
+.form-control,
+.form-select {
+    height: var(--dr-control-h);
+    border-radius: var(--bs-border-radius);
+    border-color: var(--bs-border-color);
+    font-size: var(--bs-body-font-size);
+}
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 .2rem rgba(var(--bs-primary-rgb), .25);
+}
+.form-label { font-weight: 500; margin-bottom: .25rem; }
+
+.table {
+    --bs-table-bg: var(--dr-surface);
+    margin-bottom: 0;
+}
+.table > thead > tr > th {
+    background-color: var(--dr-surface-alt);
+    font-weight: 600;
+    font-size: .75rem;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--dr-text-muted);
+    border-bottom-color: var(--bs-border-color);
+}
+.table > tbody > tr > td {
+    height: 56px;
+    vertical-align: middle;
+    border-color: var(--bs-border-color);
+}
+.table > tbody > tr:hover { background-color: var(--dr-surface-alt); }
+
+.alert {
+    border: 0;
+    border-radius: var(--bs-border-radius);
+}
+.alert-success { background-color: var(--dr-success-soft); color: #145C3D; }
+.alert-warning { background-color: var(--dr-warning-soft); color: #6B4602; }
+.alert-danger,
+.alert-error  { background-color: var(--dr-danger-soft);  color: #7A1818; }
+.alert-info   { background-color: var(--dr-info-soft);    color: #16407E; }
+
+.breadcrumb { margin: 0; font-size: .875rem; }
+.breadcrumb-item + .breadcrumb-item::before { content: "/"; color: var(--dr-text-muted); }
+.breadcrumb-item.active { color: var(--bs-body-color); font-weight: 500; }
+
+.pagination .page-link {
+    color: var(--bs-body-color);
+    border-color: var(--bs-border-color);
+}
+.pagination .page-item.active .page-link {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+}
+
+.badge { font-weight: 500; padding: .35em .7em; border-radius: 9999px; }
+.badge-soft-primary   { background-color: var(--dr-primary-soft);   color: var(--bs-primary); }
+.badge-soft-success   { background-color: var(--dr-success-soft);   color: #145C3D; }
+.badge-soft-warning   { background-color: var(--dr-warning-soft);   color: #6B4602; }
+.badge-soft-danger    { background-color: var(--dr-danger-soft);    color: var(--bs-danger); }
+.badge-soft-secondary { background-color: var(--dr-surface-alt);    color: var(--dr-text-muted); }
+
+/* ---------- 4. Componentes propios ---------- */
+
+.dr-app-shell {
+    display: grid;
+    grid-template-columns: var(--dr-sidebar-w) 1fr;
+    grid-template-rows: var(--dr-topbar-h) 1fr;
+    grid-template-areas:
+        "sidebar topbar"
+        "sidebar content";
+    min-height: 100vh;
+}
+
+.dr-sidebar {
+    grid-area: sidebar;
+    background-color: var(--dr-surface);
+    border-right: 1px solid var(--bs-border-color);
+    padding: 1.5rem 0;
+    display: flex;
+    flex-direction: column;
+}
+.dr-sidebar-brand {
+    padding: 0 1.5rem 1.5rem;
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: var(--bs-primary);
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+.dr-sidebar-nav { display: flex; flex-direction: column; gap: .125rem; padding: 0 .75rem; }
+.dr-sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .625rem .875rem;
+    border-radius: var(--bs-border-radius);
+    color: var(--bs-body-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color .15s ease;
+}
+.dr-sidebar-item:hover { background-color: var(--dr-surface-alt); color: var(--bs-body-color); }
+.dr-sidebar-item.active { background-color: var(--dr-primary-soft); color: var(--bs-primary); }
+.dr-sidebar-item .bi { font-size: 1.125rem; }
+
+.dr-topbar {
+    grid-area: topbar;
+    background-color: var(--dr-surface);
+    border-bottom: 1px solid var(--bs-border-color);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+.dr-topbar-user .dropdown-toggle::after { display: none; }
+
+.dr-content {
+    grid-area: content;
+    padding: 2rem;
+    max-width: var(--dr-content-max);
+    width: 100%;
+}
+
+.dr-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+}
+.dr-page-title { font-size: 1.5rem; font-weight: 600; margin: 0; }
+
+.dr-login-shell {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background-color: var(--bs-body-bg);
+}
+.dr-login-card {
+    background-color: var(--dr-surface);
+    border-radius: var(--bs-border-radius-lg);
+    box-shadow: var(--dr-shadow-2);
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 400px;
+}
+.dr-login-brand {
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--bs-primary);
+    margin-bottom: 2rem;
+}
+
+.dr-permission-matrix th { text-align: center; }
+.dr-permission-matrix td.dr-module-name { font-weight: 500; }
+.dr-permission-matrix td.dr-perm-cell { text-align: center; }
+.dr-permission-matrix .form-check {
+    display: inline-flex;
+    margin: 0;
+    padding: 0;
+    min-height: auto;
+}
+.dr-permission-matrix .form-check-input {
+    margin: 0;
+    width: 1.125rem;
+    height: 1.125rem;
+}
+
+.dr-error-shell {
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 3rem 1rem;
+}
+.dr-error-icon { font-size: 3rem; color: var(--dr-text-muted); margin-bottom: 1rem; }
