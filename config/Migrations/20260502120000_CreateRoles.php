@@ -13,6 +13,7 @@ class CreateRoles extends BaseMigration
 
         $this->table('roles', [
             'collation' => 'utf8mb4_unicode_ci',
+            'signed' => false,
         ])
             ->addColumn('name', 'string', ['limit' => 60, 'null' => false])
             ->addColumn('is_admin', 'boolean', ['null' => false, 'default' => false])

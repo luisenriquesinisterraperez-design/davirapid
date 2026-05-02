@@ -13,6 +13,7 @@ class CreateUsers extends BaseMigration
 
         $this->table('users', [
             'collation' => 'utf8mb4_unicode_ci',
+            'signed' => false,
         ])
             ->addColumn('username', 'string', ['limit' => 60, 'null' => false])
             ->addColumn('name', 'string', ['limit' => 120, 'null' => false])

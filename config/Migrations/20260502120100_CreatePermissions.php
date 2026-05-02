@@ -13,6 +13,7 @@ class CreatePermissions extends BaseMigration
 
         $this->table('permissions', [
             'collation' => 'utf8mb4_unicode_ci',
+            'signed' => false,
         ])
             ->addColumn('role_id', 'integer', ['signed' => false, 'null' => false])
             ->addColumn('module', 'string', ['limit' => 40, 'null' => false])
