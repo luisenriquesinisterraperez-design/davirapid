@@ -46,7 +46,31 @@ class ProductsController extends AppController
 
     public function add()
     {
-        // implemented in Task 8
+        $product = $this->Products->newEmptyEntity();
+
+        if ($this->request->is('post')) {
+            $image = $this->request->getUploadedFile('image');
+            $data = $this->request->getData();
+            // Hidden input default; convert form value to bool.
+            $data['is_active'] = !empty($data['is_active']);
+
+            $result = $this->productService->create($data, $image);
+            if ($result['success']) {
+                $this->Flash->success('Producto creado.');
+                return $this->redirect(['action' => 'index']);
+            }
+            foreach ($result['errors'] ?? ['No se pudo crear el producto.'] as $msg) {
+                $this->Flash->error($msg);
+            }
+            $product = $result['product'] ?? $product;
+        }
+
+        $this->set('product', $product);
+        $this->set('breadcrumbs', [
+            ['label' => 'Productos', 'url' => ['action' => 'index']],
+            ['label' => 'Nuevo producto'],
+        ]);
+        return null;
     }
 
     public function edit(int $id)
