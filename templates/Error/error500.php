@@ -5,7 +5,7 @@
  */
 use Cake\Core\Configure;
 
-$this->layout = false;
+$this->disableAutoLayout();
 $debug = Configure::read('debug');
 $message = $debug ? $error->getMessage() : 'Algo salió mal del lado del servidor.';
 ?>

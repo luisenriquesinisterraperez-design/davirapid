@@ -2,7 +2,8 @@
 /**
  * @var \App\View\AppView $this
  */
-if (!$this->Paginator->total() || $this->Paginator->total() <= $this->Paginator->limit()) {
+$params = $this->Paginator->params();
+if (empty($params['pageCount']) || $params['pageCount'] <= 1) {
     return;
 }
 ?>

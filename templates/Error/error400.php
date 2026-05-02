@@ -6,7 +6,7 @@
  */
 use Cake\Core\Configure;
 
-$this->layout = false;
+$this->disableAutoLayout();
 $message = $error->getMessage();
 $code = (int)($code ?? $error->getCode() ?: 400);
 $title = match ($code) {

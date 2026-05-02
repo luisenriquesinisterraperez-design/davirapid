@@ -19,7 +19,6 @@ use Cake\Http\MiddlewareQueue;
 use Cake\ORM\Locator\TableLocator;
 use Cake\Routing\Middleware\AssetMiddleware;
 use Cake\Routing\Middleware\RoutingMiddleware;
-use Cake\Routing\Router;
 use Psr\Http\Message\ServerRequestInterface;
 
 class Application extends BaseApplication implements AuthenticationServiceProviderInterface
@@ -61,10 +60,7 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
     public function getAuthenticationService(ServerRequestInterface $request): AuthenticationServiceInterface
     {
         $service = new AuthenticationService([
-            'unauthenticatedRedirect' => Router::url([
-                'controller' => 'Users',
-                'action' => 'login',
-            ]),
+            'unauthenticatedRedirect' => '/login',
             'queryParam' => 'redirect',
         ]);
 
