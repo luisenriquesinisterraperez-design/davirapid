@@ -1,55 +1,109 @@
 <?php
 /**
- * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
- *
- * Licensed under The MIT License
- * For full copyright and license information, please see the LICENSE.txt
- * Redistributions of files must retain the above copyright notice.
- *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
- * @link          https://cakephp.org CakePHP(tm) Project
- * @since         0.10.0
- * @license       https://opensource.org/licenses/mit-license.php MIT License
  * @var \App\View\AppView $this
+ * @var array $currentUser
+ * @var string $currentRoleName
+ * @var bool $isAdministrator
+ * @var array<string, array<string, bool>> $userPermissions
+ * @var array $sidebarCounters
+ * @var array $breadcrumbs
  */
-
-$cakeDescription = 'CakePHP: the rapid development php framework';
+$this->loadHelper('Sidebar');
+$controller = (string)$this->request->getParam('controller');
+$visibleItems = $this->Sidebar->visibleItems($userPermissions ?? [], $controller);
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <?= $this->Html->charset() ?>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
-        <?= $cakeDescription ?>:
-        <?= $this->fetch('title') ?>
+        <?= $this->fetch('title') ? h($this->fetch('title')) . ' · ' : '' ?>Davi Rapid Admin
     </title>
     <?= $this->Html->meta('icon') ?>
-
-    <?= $this->Html->css(['normalize.min', 'milligram.min', 'fonts', 'cake']) ?>
-
+    <?= $this->Html->css('vendor/bootstrap.min') ?>
+    <?= $this->Html->css('vendor/bootstrap-icons.min') ?>
+    <?= $this->Html->css('davirapid') ?>
     <?= $this->fetch('meta') ?>
     <?= $this->fetch('css') ?>
-    <?= $this->fetch('script') ?>
 </head>
 <body>
-    <nav class="top-nav">
-        <div class="top-nav-title">
-            <a href="<?= $this->Url->build('/') ?>"><span>Cake</span>PHP</a>
+<div class="dr-app-shell">
+
+    <aside class="dr-sidebar">
+        <div class="dr-sidebar-brand">
+            <i class="bi bi-shop"></i>
+            <span>Davi Rapid</span>
         </div>
-        <div class="top-nav-links">
-            <a target="_blank" rel="noopener" href="https://book.cakephp.org/5/">Documentation</a>
-            <a target="_blank" rel="noopener" href="https://api.cakephp.org/">API</a>
+        <nav class="dr-sidebar-nav" aria-label="Navegación principal">
+            <?php foreach ($visibleItems as $item): ?>
+                <?= $this->Html->link(
+                    sprintf('<i class="bi %s"></i><span>%s</span>',
+                        h($item['icon']),
+                        h($item['label'])
+                    ),
+                    $item['url'],
+                    [
+                        'escape' => false,
+                        'class' => 'dr-sidebar-item' . ($item['active'] ? ' active' : ''),
+                    ]
+                ) ?>
+            <?php endforeach; ?>
+        </nav>
+    </aside>
+
+    <header class="dr-topbar">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><?= $this->Html->link('Inicio', '/') ?></li>
+                <?php foreach ($breadcrumbs ?? [] as $i => $crumb): ?>
+                    <?php $isLast = $i === array_key_last($breadcrumbs); ?>
+                    <li class="breadcrumb-item<?= $isLast ? ' active' : '' ?>"<?= $isLast ? ' aria-current="page"' : '' ?>>
+                        <?php if (!$isLast && !empty($crumb['url'])): ?>
+                            <?= $this->Html->link(h($crumb['label']), $crumb['url']) ?>
+                        <?php else: ?>
+                            <?= h($crumb['label']) ?>
+                        <?php endif; ?>
+                    </li>
+                <?php endforeach; ?>
+            </ol>
+        </nav>
+
+        <div class="dr-topbar-user dropdown">
+            <button class="btn btn-sm btn-light dropdown-toggle d-inline-flex align-items-center gap-2"
+                    type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-person-circle"></i>
+                <span class="d-none d-sm-inline">
+                    <?= h($currentUser['name'] ?? 'Usuario') ?>
+                </span>
+                <small class="text-muted d-none d-md-inline">· <?= h($currentRoleName) ?></small>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                <li class="dropdown-item-text small text-muted">
+                    <?= h($currentUser['username'] ?? '') ?>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <?= $this->Html->link(
+                        '<i class="bi bi-box-arrow-right"></i> Cerrar sesión',
+                        ['controller' => 'Users', 'action' => 'logout'],
+                        ['escape' => false, 'class' => 'dropdown-item']
+                    ) ?>
+                </li>
+            </ul>
         </div>
-    </nav>
-    <main class="main">
-        <div class="container">
-            <?= $this->Flash->render() ?>
-            <?= $this->fetch('content') ?>
-        </div>
+    </header>
+
+    <main class="dr-content">
+        <?= $this->Flash->render() ?>
+        <?= $this->fetch('content') ?>
     </main>
-    <footer>
-    </footer>
+
+</div>
+
+<?= $this->Html->script('vendor/bootstrap.bundle.min', ['defer' => true]) ?>
+<?= $this->fetch('script') ?>
 </body>
 </html>
