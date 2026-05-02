@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <rect width="200" height="200" fill="#f1f3f5"/>
+  <g fill="#adb5bd">
+    <path d="M50 70h100v80H50z" fill="none" stroke="#adb5bd" stroke-width="3"/>
+    <circle cx="80" cy="100" r="8"/>
+    <path d="M55 145l30-30 25 25 20-15 20 20v5H55z"/>
+  </g>
+  <text x="100" y="180" text-anchor="middle" fill="#868e96" font-family="sans-serif" font-size="14">Sin imagen</text>
+</svg>
