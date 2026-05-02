@@ -104,12 +104,54 @@ class ProductsController extends AppController
 
     public function delete(int $id)
     {
-        // implemented in Task 10
+        $this->request->allowMethod(['post', 'delete']);
+
+        try {
+            $product = $this->Products->get($id);
+        } catch (RecordNotFoundException) {
+            $this->Flash->error('El producto ya no existe.');
+            return $this->redirect(['action' => 'index']);
+        }
+
+        $result = $this->productService->delete($product);
+        if ($result['success']) {
+            $this->Flash->success('Producto eliminado.');
+        } else {
+            $this->Flash->error($result['errors'][0] ?? 'No se pudo eliminar el producto.');
+        }
+        return $this->redirect(['action' => 'index']);
     }
 
     public function toggleActive(int $id)
     {
-        // implemented in Task 10
+        $this->request->allowMethod(['post']);
+
+        try {
+            $product = $this->Products->get($id);
+        } catch (RecordNotFoundException) {
+            $this->Flash->error('El producto ya no existe.');
+            return $this->redirect(['action' => 'index']);
+        }
+
+        $result = $this->productService->toggleActive($product);
+        if ($result['success']) {
+            $msg = $result['product']->is_active ? 'Producto activado.' : 'Producto desactivado.';
+            $this->Flash->success($msg);
+        } else {
+            $this->Flash->error($result['errors'][0] ?? 'No se pudo cambiar el estado.');
+        }
+        return $this->redirect($this->referer(['action' => 'index']));
+    }
+
+    /**
+     * Sumamos el mapeo de la acción 'toggleActive' al permiso 'edit'.
+     */
+    protected function _actionToPermission(string $action): string
+    {
+        return match ($action) {
+            'toggleActive' => 'edit',
+            default => parent::_actionToPermission($action),
+        };
     }
 
     /**
