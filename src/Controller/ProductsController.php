@@ -75,7 +75,31 @@ class ProductsController extends AppController
 
     public function edit(int $id)
     {
-        // implemented in Task 9
+        $product = $this->Products->get($id);
+
+        if ($this->request->is(['put', 'post', 'patch'])) {
+            $image = $this->request->getUploadedFile('image');
+            $data = $this->request->getData();
+            $data['is_active'] = !empty($data['is_active']);
+
+            $result = $this->productService->update($product, $data, $image);
+            if ($result['success']) {
+                $this->Flash->success('Producto actualizado.');
+                return $this->redirect(['action' => 'index']);
+            }
+            foreach ($result['errors'] ?? ['No se pudo actualizar el producto.'] as $msg) {
+                $this->Flash->error($msg);
+            }
+            $product = $result['product'] ?? $product;
+        }
+
+        $this->set('product', $product);
+        $this->set('breadcrumbs', [
+            ['label' => 'Productos', 'url' => ['action' => 'index']],
+            ['label' => $product->name, 'url' => ['action' => 'view', $product->id]],
+            ['label' => 'Editar'],
+        ]);
+        return null;
     }
 
     public function delete(int $id)
