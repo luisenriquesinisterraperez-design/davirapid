@@ -41,7 +41,7 @@
             "cakephp/plugin-installer": true,
             "dealerdirect/phpcodesniffer-composer-installer": true
         },
-        "platform-check": true,
+        "platform-check": false,
         "sort-packages": true
     },
     "scripts": {
