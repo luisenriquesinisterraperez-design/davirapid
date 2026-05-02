@@ -50,7 +50,7 @@ class User extends Entity implements IdentityInterface, ArrayAccess
 
     /* -------- Authentication\IdentityInterface -------- */
 
-    public function getIdentifier(): mixed
+    public function getIdentifier(): array|string|int|null
     {
         return $this->id;
     }
