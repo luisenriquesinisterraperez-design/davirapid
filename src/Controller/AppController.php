@@ -18,6 +18,7 @@ class AppController extends Controller
     protected array $controllerModuleMap = [
         'Roles' => 'roles',
         'Users' => 'users',
+        'Products' => 'products',
     ];
 
     /**

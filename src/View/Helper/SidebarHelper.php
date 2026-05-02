@@ -20,6 +20,12 @@ class SidebarHelper extends Helper
      */
     private array $items = [
         [
+            'module' => 'products',
+            'label' => 'Productos',
+            'icon' => 'bi-box-seam',
+            'url' => ['controller' => 'Products', 'action' => 'index'],
+        ],
+        [
             'module' => 'users',
             'label' => 'Usuarios',
             'icon' => 'bi-people',

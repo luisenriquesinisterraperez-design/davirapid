@@ -17,6 +17,7 @@ final class AuthorizationService
     public const MODULES = [
         'roles' => 'Roles',
         'users' => 'Usuarios',
+        'products' => 'Productos',
     ];
 
     /** Acciones de permiso almacenadas en DB. */
