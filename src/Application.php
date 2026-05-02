@@ -28,19 +28,11 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
     {
         parent::bootstrap();
 
-        if (PHP_SAPI === 'cli') {
-            $this->bootstrapCli();
-        } else {
+        if (PHP_SAPI !== 'cli') {
             FactoryLocator::add(
                 'Table',
                 (new TableLocator())->allowFallbackClass(false)
             );
-        }
-
-        $this->addPlugin('Authentication');
-
-        if (Configure::read('debug')) {
-            $this->addPlugin('DebugKit');
         }
     }
 
@@ -103,9 +95,4 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
         return $service;
     }
 
-    protected function bootstrapCli(): void
-    {
-        $this->addOptionalPlugin('Bake');
-        $this->addPlugin('Migrations');
-    }
 }
