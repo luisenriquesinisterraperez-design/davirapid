@@ -25,6 +25,15 @@ final class UserService
             ];
         }
 
+        $linkError = $this->_validateDeliveryLink($data['delivery_id'] ?? null, null);
+        if ($linkError !== null) {
+            Log::info('User create rejected delivery link: {msg}', [
+                'msg' => $linkError,
+                'scope' => ['users', 'deliveries'],
+            ]);
+            return ['success' => false, 'errors' => [$linkError]];
+        }
+
         $user = $usersTable->patchEntity($user, $data, ['validate' => 'create']);
 
         if (!$usersTable->save($user)) {
@@ -72,6 +81,16 @@ final class UserService
             ];
         }
 
+        $linkError = $this->_validateDeliveryLink($data['delivery_id'] ?? null, $id);
+        if ($linkError !== null) {
+            Log::info('User update rejected delivery link: {msg} (user_id={id})', [
+                'msg' => $linkError,
+                'id' => $id,
+                'scope' => ['users', 'deliveries'],
+            ]);
+            return ['success' => false, 'errors' => [$linkError]];
+        }
+
         $user = $usersTable->patchEntity($user, $data);
 
         if (!$usersTable->save($user)) {
@@ -101,6 +120,37 @@ final class UserService
         ]);
 
         return ['success' => true];
+    }
+
+    private function _validateDeliveryLink(mixed $deliveryId, ?int $excludeUserId): ?string
+    {
+        if ($deliveryId === null || $deliveryId === '' || (int)$deliveryId === 0) {
+            return null;
+        }
+
+        $deliveriesTable = $this->fetchTable('Deliveries');
+        $delivery = $deliveriesTable->find()
+            ->where(['Deliveries.id' => (int)$deliveryId])
+            ->first();
+
+        if ($delivery === null) {
+            return 'El repartidor seleccionado no existe.';
+        }
+        if (!$delivery->isActive()) {
+            return 'El repartidor seleccionado está inactivo.';
+        }
+
+        $usersTable = $this->fetchTable('Users');
+        $conflictQuery = $usersTable->find()
+            ->where(['Users.delivery_id' => (int)$deliveryId]);
+        if ($excludeUserId !== null) {
+            $conflictQuery->where(['Users.id !=' => $excludeUserId]);
+        }
+        if ($conflictQuery->first() !== null) {
+            return 'El repartidor seleccionado ya está vinculado a otro usuario.';
+        }
+
+        return null;
     }
 
     private function _isAdminRole(int $roleId): bool
