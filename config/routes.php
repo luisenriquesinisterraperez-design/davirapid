@@ -29,6 +29,13 @@ return function (RouteBuilder $routes): void {
             ['id' => '\d+', 'pass' => ['id'], '_method' => 'POST']
         );
 
+        // Acción custom: alternar disponibilidad de un cliente.
+        $builder->connect(
+            '/customers/toggle-active/{id}',
+            ['controller' => 'Customers', 'action' => 'toggleActive'],
+            ['id' => '\d+', 'pass' => ['id'], '_method' => 'POST']
+        );
+
         // CRUD estándar para Roles, Users (index/view/add/edit/delete) y home.
         $builder->fallbacks();
     });
