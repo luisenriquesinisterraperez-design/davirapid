@@ -32,6 +32,12 @@ class SidebarHelper extends Helper
             'url' => ['controller' => 'Customers', 'action' => 'index'],
         ],
         [
+            'module' => 'deliveries',
+            'label' => 'Repartidores',
+            'icon' => 'bi-truck',
+            'url' => ['controller' => 'Deliveries', 'action' => 'index'],
+        ],
+        [
             'module' => 'users',
             'label' => 'Usuarios',
             'icon' => 'bi-person-badge',

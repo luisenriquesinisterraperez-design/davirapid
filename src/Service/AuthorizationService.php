@@ -19,6 +19,7 @@ final class AuthorizationService
         'users' => 'Usuarios',
         'products' => 'Productos',
         'customers' => 'Clientes',
+        'deliveries' => 'Repartidores',
     ];
 
     /** Acciones de permiso almacenadas en DB. */

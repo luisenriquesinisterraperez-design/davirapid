@@ -20,6 +20,7 @@ class AppController extends Controller
         'Users' => 'users',
         'Products' => 'products',
         'Customers' => 'customers',
+        'Deliveries' => 'deliveries',
     ];
 
     /**

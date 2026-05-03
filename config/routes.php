@@ -36,6 +36,13 @@ return function (RouteBuilder $routes): void {
             ['id' => '\d+', 'pass' => ['id'], '_method' => 'POST']
         );
 
+        // Acción custom: alternar disponibilidad de un repartidor.
+        $builder->connect(
+            '/deliveries/toggle-active/{id}',
+            ['controller' => 'Deliveries', 'action' => 'toggleActive'],
+            ['id' => '\d+', 'pass' => ['id'], '_method' => 'POST']
+        );
+
         // CRUD estándar para Roles, Users (index/view/add/edit/delete) y home.
         $builder->fallbacks();
     });
