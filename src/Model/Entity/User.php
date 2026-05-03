@@ -16,6 +16,7 @@ class User extends Entity implements IdentityInterface, ArrayAccess
         'name' => true,
         'password' => true,
         'role_id' => true,
+        'delivery_id' => true,
         'active' => true,
         'role' => true,
     ];

@@ -23,6 +23,11 @@ class UsersTable extends Table
             'foreignKey' => 'role_id',
             'joinType' => 'INNER',
         ]);
+
+        $this->belongsTo('Deliveries', [
+            'foreignKey' => 'delivery_id',
+            'joinType' => 'LEFT',
+        ]);
     }
 
     public function validationDefault(Validator $validator): Validator
@@ -45,6 +50,14 @@ class UsersTable extends Table
                 'on' => function (array $context): bool {
                     return !empty($context['data']['password']);
                 },
+            ])
+            ->allowEmptyString('delivery_id')
+            ->add('delivery_id', 'naturalNumber', [
+                'rule' => ['naturalNumber'],
+                'message' => 'Repartidor inválido',
+                'on' => function (array $context): bool {
+                    return !empty($context['data']['delivery_id']);
+                },
             ]);
     }
 
@@ -61,6 +74,14 @@ class UsersTable extends Table
             'uniqueUsername'
         );
         $rules->add($rules->existsIn(['role_id'], 'Roles'));
+        $rules->add(
+            $rules->isUnique(
+                ['delivery_id'],
+                ['allowMultipleNulls' => true],
+                'Este repartidor ya está vinculado a otro usuario'
+            ),
+            'uniqueDeliveryLink'
+        );
         return $rules;
     }
 
