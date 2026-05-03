@@ -4,6 +4,7 @@
  * @var \App\Model\Entity\User $user
  * @var \Cake\ORM\ResultSet|\App\Model\Entity\Role[] $roles
  * @var bool $isEditingAdministrator
+ * @var array<int, string> $deliveriesList
  */
 $this->assign('title', 'Editar usuario');
 $rolesList = [];
@@ -61,6 +62,17 @@ foreach ($roles as $r) {
                         'empty' => 'Seleccionar rol…',
                     ]) ?>
                 <?php endif; ?>
+            </div>
+            <div class="col-md-6">
+                <?= $this->Form->control('delivery_id', [
+                    'label' => 'Repartidor vinculado (opcional)',
+                    'class' => 'form-select',
+                    'type' => 'select',
+                    'options' => $deliveriesList,
+                    'empty' => '— Ninguno —',
+                    'required' => false,
+                    'default' => $user->delivery_id,
+                ]) ?>
             </div>
             <div class="col-12">
                 <?php if ($isEditingAdministrator): ?>

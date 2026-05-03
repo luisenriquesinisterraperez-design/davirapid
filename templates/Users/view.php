@@ -50,6 +50,18 @@ $this->assign('title', $user->username);
             <dt class="col-sm-3 text-muted">Rol</dt>
             <dd class="col-sm-9"><?= h($user->role?->name ?? '—') ?></dd>
 
+            <dt class="col-sm-3 text-muted">Repartidor</dt>
+            <dd class="col-sm-9">
+                <?php if (!empty($user->delivery)): ?>
+                    <?= $this->Html->link(
+                        h(trim(($user->delivery->last_name ?? '') . ', ' . ($user->delivery->first_name ?? ''))),
+                        ['controller' => 'Deliveries', 'action' => 'view', $user->delivery->id]
+                    ) ?>
+                <?php else: ?>
+                    <span class="text-muted">—</span>
+                <?php endif; ?>
+            </dd>
+
             <dt class="col-sm-3 text-muted">Última conexión</dt>
             <dd class="col-sm-9">
                 <?= $user->last_login_at ? h($user->last_login_at->i18nFormat('dd/MM/yyyy HH:mm')) : '—' ?>

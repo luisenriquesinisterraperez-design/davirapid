@@ -86,7 +86,7 @@ class UsersController extends AppController
 
     public function view(int $id): void
     {
-        $user = $this->Users->get($id, contain: ['Roles']);
+        $user = $this->Users->get($id, contain: ['Roles', 'Deliveries']);
         $this->set('user', $user);
         $this->set('breadcrumbs', [
             ['label' => 'Usuarios', 'url' => ['action' => 'index']],
@@ -111,6 +111,7 @@ class UsersController extends AppController
         }
 
         $this->set('user', $user);
+        $this->set('deliveriesList', $this->_availableDeliveriesList(null));
         $this->set('roles', $this->Users->Roles->find('assignable')->all());
         $this->set('isEditingAdministrator', false);
         $this->set('breadcrumbs', [
@@ -138,6 +139,7 @@ class UsersController extends AppController
             : $this->Users->Roles->find('assignable');
 
         $this->set('user', $user);
+        $this->set('deliveriesList', $this->_availableDeliveriesList((int)$user->id));
         $this->set('roles', $rolesQuery->all());
         $this->set('isEditingAdministrator', $isEditingAdministrator);
         $this->set('breadcrumbs', [
@@ -178,6 +180,32 @@ class UsersController extends AppController
         $this->userService->unlock($id);
         $this->Flash->success('Cuenta desbloqueada.');
         return $this->redirect(['action' => 'index']);
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function _availableDeliveriesList(?int $currentUserId): array
+    {
+        $usersTable = $this->fetchTable('Users');
+        $deliveriesTable = $this->fetchTable('Deliveries');
+
+        $takenQuery = $usersTable->find()
+            ->select(['delivery_id'])
+            ->where(['Users.delivery_id IS NOT' => null]);
+        if ($currentUserId !== null) {
+            $takenQuery->where(['Users.id !=' => $currentUserId]);
+        }
+        $takenIds = array_filter(array_map(
+            fn($u) => (int)$u->delivery_id,
+            $takenQuery->all()->toArray()
+        ));
+
+        $query = $deliveriesTable->find('active')->find('fullNameList');
+        if (!empty($takenIds)) {
+            $query->where(['Deliveries.id NOT IN' => $takenIds]);
+        }
+        return $query->toArray();
     }
 
     /**
