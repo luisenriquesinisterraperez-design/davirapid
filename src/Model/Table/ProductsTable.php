@@ -19,8 +19,20 @@ class ProductsTable extends Table
         $this->setDisplayField('name');
         $this->addBehavior('Timestamp');
 
+        $this->hasMany('ProductIngredients', [
+            'foreignKey' => 'product_id',
+            'dependent' => true,
+            'cascadeCallbacks' => true,
+        ]);
+
+        $this->belongsToMany('Ingredients', [
+            'through' => 'ProductIngredients',
+            'foreignKey' => 'product_id',
+            'targetForeignKey' => 'ingredient_id',
+            'joinTable' => 'product_ingredients',
+        ]);
+
         // Future associations declared when their tables exist:
-        // $this->hasMany('ProductIngredients');
         // $this->hasMany('OrderItems');
     }
 
@@ -34,7 +46,7 @@ class ProductsTable extends Table
             ->greaterThanOrEqual(
                 'price',
                 ProductConstants::PRICE_MIN,
-                'El precio debe ser mayor o igual a 1'
+                'El precio debe ser mayor o igual a 1',
             )
             ->allowEmptyString('code')
             ->maxLength('code', ProductConstants::CODE_MAX_LENGTH, 'El código puede tener hasta 20 caracteres')
@@ -43,6 +55,7 @@ class ProductsTable extends Table
                     if ($value === null || $value === '') {
                         return true;
                     }
+
                     return (bool)preg_match(ProductConstants::CODE_PATTERN, (string)$value);
                 },
                 'message' => 'El código solo permite letras, números y guiones',
@@ -56,10 +69,11 @@ class ProductsTable extends Table
         $rules->add(
             $rules->isUnique(
                 ['code'],
-                ['allowMultipleNulls' => true, 'message' => 'Ese código ya está en uso']
+                ['allowMultipleNulls' => true, 'message' => 'Ese código ya está en uso'],
             ),
-            'uniqueCode'
+            'uniqueCode',
         );
+
         return $rules;
     }
 }

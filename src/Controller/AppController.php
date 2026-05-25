@@ -5,9 +5,11 @@ namespace App\Controller;
 
 use App\Service\AuthorizationService;
 use App\Service\LoginThrottleService;
+use Authentication\IdentityInterface;
 use Cake\Controller\Controller;
 use Cake\Event\EventInterface;
 use Cake\Http\Exception\ForbiddenException;
+use Cake\ORM\Query\SelectQuery;
 
 class AppController extends Controller
 {
@@ -21,6 +23,16 @@ class AppController extends Controller
         'Products' => 'products',
         'Customers' => 'customers',
         'Deliveries' => 'deliveries',
+        'Ingredients' => 'ingredients',
+        'Recipes' => 'recipes',
+        'Adjustments' => 'adjustments',
+        'Orders' => 'orders',
+        'OrderLogs' => 'audit',
+        'Receivables' => 'receivables',
+        'AccountPayments' => 'account_payments',
+        'Expenses' => 'expenses',
+        'CashCloses' => 'cash_closes',
+        'Dashboard' => 'dashboard',
     ];
 
     /**
@@ -30,6 +42,18 @@ class AppController extends Controller
     protected array $publicActions = [
         'Users' => ['login', 'logout'],
     ];
+
+    /**
+     * Override per-acción del mapeo a módulo. Las subclases declaran acá las
+     * acciones cuyo permiso debe chequearse contra un módulo distinto al que
+     * corresponde al controller (ej: una acción de ProductsController que
+     * realmente pertenece al módulo 'recipes' a efectos de RBAC).
+     *
+     * Vacío por default = sin override; cae al $controllerModuleMap.
+     *
+     * @var array<string, string> Mapa action => moduleKey.
+     */
+    protected array $actionModuleMap = [];
 
     public AuthorizationService $authorization;
 
@@ -75,7 +99,9 @@ class AppController extends Controller
         $this->set('breadcrumbs', []);
 
         // 4. Enforce permission para esta request.
-        $module = $this->controllerModuleMap[$controller] ?? null;
+        $module = $this->actionModuleMap[$action]
+            ?? $this->controllerModuleMap[$controller]
+            ?? null;
         if ($module === null) {
             return null;
         }
@@ -105,11 +131,54 @@ class AppController extends Controller
     }
 
     /**
+     * Si el currentUser está vinculado a un repartidor (delivery_id no nulo),
+     * restringe la query al alias dado a sus propios pedidos. Regla §21 acceso 4.
+     *
+     * Early-return seguro si el user no es repartidor — invocable siempre.
+     */
+    protected function _scopeToRepartidor(SelectQuery $query, string $alias = 'Orders'): SelectQuery
+    {
+        $deliveryId = $this->_currentDeliveryId();
+        if ($deliveryId === null) {
+            return $query;
+        }
+
+        return $query->where(["{$alias}.delivery_id" => $deliveryId]);
+    }
+
+    /**
+     * Guard para vistas puntuales (view/edit/cancel/...). Si el user es repartidor
+     * y el delivery_id del pedido no coincide con el suyo, 403.
+     */
+    protected function _enforceRepartidorAccess(?int $orderDeliveryId): void
+    {
+        $deliveryId = $this->_currentDeliveryId();
+        if ($deliveryId !== null && (int)$orderDeliveryId !== $deliveryId) {
+            throw new ForbiddenException('No tenés acceso a este pedido.');
+        }
+    }
+
+    /**
+     * Returns the delivery_id linked to the current user (if any).
+     * Defensive: `(int)null === 0` would be a valid id, so we check is_numeric first.
+     */
+    protected function _currentDeliveryId(): ?int
+    {
+        $identity = $this->Authentication->getIdentity();
+        if ($identity === null) {
+            return null;
+        }
+        $delivery = $identity->get('delivery_id');
+
+        return is_numeric($delivery) ? (int)$delivery : null;
+    }
+
+    /**
      * Convierte la identity (entity User) a array plano consumible por AuthorizationService.
      *
      * @param \Authentication\IdentityInterface $identity
      */
-    protected function _identityToArray($identity): array
+    protected function _identityToArray(IdentityInterface $identity): array
     {
         $data = $identity->getOriginalData();
         if (is_array($data)) {
@@ -120,8 +189,10 @@ class AppController extends Controller
             if (isset($array['role']) && is_object($array['role']) && method_exists($array['role'], 'toArray')) {
                 $array['role'] = $array['role']->toArray();
             }
+
             return $array;
         }
+
         return (array)$data;
     }
 }

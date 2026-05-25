@@ -20,12 +20,24 @@ final class AuthorizationService
         'products' => 'Productos',
         'customers' => 'Clientes',
         'deliveries' => 'Repartidores',
+        'ingredients' => 'Ingredientes',
+        'recipes' => 'Recetas',
+        'adjustments' => 'Ajustes de Inventario',
+        'orders' => 'Pedidos',
+        'audit' => 'Auditoría',
+        'receivables' => 'Cuentas por Cobrar',
+        'account_payments' => 'Abonos',
+        'expenses' => 'Gastos',
+        'cash_closes' => 'Cierre Diario',
+        'dashboard' => 'Dashboard',
     ];
 
     /** Acciones de permiso almacenadas en DB. */
     public const ACTIONS = ['view', 'create', 'edit', 'delete'];
 
-    /** @var array<int, array<string, array<string, bool>>> Cache por proceso, no persistente. */
+    /**
+     * @var array<int, array<string, array<string, bool>>> Cache por proceso, no persistente.
+     */
     private array $cache = [];
 
     /**
@@ -45,8 +57,8 @@ final class AuthorizationService
             return false;
         }
 
-        // 3. Roles solo lo gestiona el Administrador (defensa más allá del bypass).
-        if ($module === 'roles') {
+        // 3. Roles y Auditoría son admin-only (defensa más allá del bypass).
+        if (in_array($module, ['roles', 'audit'], true)) {
             return false;
         }
 
@@ -78,6 +90,7 @@ final class AuthorizationService
                 $matrix[$module][$action] = $this->isAllowed($user, $module, $action);
             }
         }
+
         return $matrix;
     }
 
@@ -112,6 +125,7 @@ final class AuthorizationService
         }
 
         $this->cache[$roleId] = $byModule;
+
         return $byModule;
     }
 }
