@@ -324,7 +324,7 @@ final class DashboardService
         $items = $this->fetchTable('OrderItems');
         $rows = $items->find()
             ->select([
-                'name' => 'OrderItems.product_name_snapshot',
+                'name' => 'OrderItems.product_name',
                 'qty' => $items->find()->func()->sum('OrderItems.quantity'),
                 'revenue' => $items->find()->func()->sum('OrderItems.line_subtotal'),
             ])
@@ -334,7 +334,7 @@ final class DashboardService
                 'Orders.created >=' => $fromDt,
                 'Orders.created <=' => $toDt,
             ])
-            ->groupBy(['OrderItems.product_name_snapshot'])
+            ->groupBy(['OrderItems.product_name'])
             ->orderBy(['qty' => 'DESC'])
             ->limit($limit)
             ->all();
@@ -357,13 +357,18 @@ final class DashboardService
     private function deliveryRanking(string $fromDt, string $toDt): array
     {
         $orders = $this->fetchTable('Orders');
-        $rows = $orders->find()
+        $query = $orders->find();
+        $nameExpr = $query->func()->concat([
+            'Deliveries.first_name' => 'identifier',
+            "' '" => 'literal',
+            'Deliveries.last_name' => 'identifier',
+        ]);
+        $rows = $query
             ->select([
-                'name' => 'Deliveries.name',
-                'deliveries' => $orders->find()->func()->count('Orders.id'),
-                'earnings' => $orders->find()->func()->sum('Orders.shipping_cost'),
+                'name' => $nameExpr,
+                'deliveries' => $query->func()->count('Orders.id'),
+                'earnings' => $query->func()->sum('Orders.shipping_cost'),
             ])
-            ->contain(['Deliveries'])
             ->innerJoinWith('Deliveries')
             ->where([
                 'Orders.status' => OrderConstants::STATUS_DELIVERED,
@@ -371,7 +376,7 @@ final class DashboardService
                 'Orders.created >=' => $fromDt,
                 'Orders.created <=' => $toDt,
             ])
-            ->groupBy(['Deliveries.id', 'Deliveries.name'])
+            ->groupBy(['Deliveries.id', 'Deliveries.first_name', 'Deliveries.last_name'])
             ->orderBy(['deliveries' => 'DESC'])
             ->limit(10)
             ->all();

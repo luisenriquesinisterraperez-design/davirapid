@@ -74,7 +74,7 @@ $this->assign('title', 'Editar rol');
 
 <?php $this->start('script'); ?>
 <script>
-(function () {
+document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.dr-perm-checkbox').forEach(function (cb) {
         cb.addEventListener('change', function () {
             if (cb.disabled) return;
@@ -94,6 +94,6 @@ $this->assign('title', 'Editar rol');
     document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function (el) {
         new bootstrap.Tooltip(el);
     });
-})();
+});
 </script>
 <?php $this->end(); ?>
