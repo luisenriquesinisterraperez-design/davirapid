@@ -11,5 +11,7 @@ final class DeliveryConstants
     /** Permissive: digits, spaces, plus, hyphen, parentheses. */
     public const PHONE_REGEX = '/^[0-9 +\-()]+$/';
 
-    private function __construct() {}
+    private function __construct()
+    {
+    }
 }

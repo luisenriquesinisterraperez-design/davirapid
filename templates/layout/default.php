@@ -10,7 +10,7 @@
  */
 $this->loadHelper('Sidebar');
 $controller = (string)$this->request->getParam('controller');
-$visibleItems = $this->Sidebar->visibleItems($userPermissions ?? [], $controller);
+$visibleGroups = $this->Sidebar->visibleGroups($userPermissions ?? [], $controller);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -38,18 +38,24 @@ $visibleItems = $this->Sidebar->visibleItems($userPermissions ?? [], $controller
             <span>Davi Rapid</span>
         </div>
         <nav class="dr-sidebar-nav" aria-label="Navegación principal">
-            <?php foreach ($visibleItems as $item): ?>
-                <?= $this->Html->link(
-                    sprintf('<i class="bi %s"></i><span>%s</span>',
-                        h($item['icon']),
-                        h($item['label'])
-                    ),
-                    $item['url'],
-                    [
-                        'escape' => false,
-                        'class' => 'dr-sidebar-item' . ($item['active'] ? ' active' : ''),
-                    ]
-                ) ?>
+            <?php foreach ($visibleGroups as $group) : ?>
+                <?php if ($group['section'] !== '') : ?>
+                    <div class="dr-sidebar-section"><?= h($group['section']) ?></div>
+                <?php endif; ?>
+                <?php foreach ($group['items'] as $item) : ?>
+                    <?= $this->Html->link(
+                        sprintf(
+                            '<i class="bi %s"></i><span>%s</span>',
+                            h($item['icon']),
+                            h($item['label']),
+                        ),
+                        $item['url'],
+                        [
+                            'escape' => false,
+                            'class' => 'dr-sidebar-item' . ($item['active'] ? ' active' : ''),
+                        ],
+                    ) ?>
+                <?php endforeach; ?>
             <?php endforeach; ?>
         </nav>
     </aside>
@@ -58,12 +64,12 @@ $visibleItems = $this->Sidebar->visibleItems($userPermissions ?? [], $controller
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><?= $this->Html->link('Inicio', '/') ?></li>
-                <?php foreach ($breadcrumbs ?? [] as $i => $crumb): ?>
+                <?php foreach ($breadcrumbs ?? [] as $i => $crumb) : ?>
                     <?php $isLast = $i === array_key_last($breadcrumbs); ?>
                     <li class="breadcrumb-item<?= $isLast ? ' active' : '' ?>"<?= $isLast ? ' aria-current="page"' : '' ?>>
-                        <?php if (!$isLast && !empty($crumb['url'])): ?>
+                        <?php if (!$isLast && !empty($crumb['url'])) : ?>
                             <?= $this->Html->link(h($crumb['label']), $crumb['url']) ?>
-                        <?php else: ?>
+                        <?php else : ?>
                             <?= h($crumb['label']) ?>
                         <?php endif; ?>
                     </li>
@@ -89,7 +95,7 @@ $visibleItems = $this->Sidebar->visibleItems($userPermissions ?? [], $controller
                     <?= $this->Html->link(
                         '<i class="bi bi-box-arrow-right"></i> Cerrar sesión',
                         ['controller' => 'Users', 'action' => 'logout'],
-                        ['escape' => false, 'class' => 'dropdown-item']
+                        ['escape' => false, 'class' => 'dropdown-item'],
                     ) ?>
                 </li>
             </ul>

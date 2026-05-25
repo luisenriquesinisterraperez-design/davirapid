@@ -32,6 +32,7 @@ class Customer extends Entity
         if ($name === '') {
             return $phone;
         }
+
         return $name . ' — ' . $phone;
     }
 }

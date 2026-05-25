@@ -41,9 +41,10 @@ class PermissionsTable extends Table
     {
         $rules->add(
             $rules->isUnique(['role_id', 'module'], 'Ya existe un registro de permisos para este módulo'),
-            'uniqueRoleModule'
+            'uniqueRoleModule',
         );
         $rules->add($rules->existsIn(['role_id'], 'Roles'));
+
         return $rules;
     }
 }

@@ -95,6 +95,7 @@ final class DeliveryService
                 $flat[] = $message;
             }
         });
+
         return $flat ?: ['Datos inválidos.'];
     }
 }

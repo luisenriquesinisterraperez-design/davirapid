@@ -29,14 +29,23 @@ class DeliveriesTable extends Table
     {
         return $validator
             ->notEmptyString('first_name', 'El nombre es requerido')
-            ->maxLength('first_name', DeliveryConstants::NAME_MAX_LENGTH,
-                'El nombre no puede superar 60 caracteres')
+            ->maxLength(
+                'first_name',
+                DeliveryConstants::NAME_MAX_LENGTH,
+                'El nombre no puede superar 60 caracteres',
+            )
             ->notEmptyString('last_name', 'El apellido es requerido')
-            ->maxLength('last_name', DeliveryConstants::NAME_MAX_LENGTH,
-                'El apellido no puede superar 60 caracteres')
+            ->maxLength(
+                'last_name',
+                DeliveryConstants::NAME_MAX_LENGTH,
+                'El apellido no puede superar 60 caracteres',
+            )
             ->notEmptyString('phone', 'El teléfono es requerido')
-            ->maxLength('phone', DeliveryConstants::PHONE_MAX_LENGTH,
-                'El teléfono no puede superar 20 caracteres')
+            ->maxLength(
+                'phone',
+                DeliveryConstants::PHONE_MAX_LENGTH,
+                'El teléfono no puede superar 20 caracteres',
+            )
             ->add('phone', 'format', [
                 'rule' => ['custom', DeliveryConstants::PHONE_REGEX],
                 'message' => 'El teléfono solo admite dígitos, espacios, "+", "-" y paréntesis',
@@ -57,7 +66,7 @@ class DeliveriesTable extends Table
             ->formatResults(function ($results) {
                 return $results->combine(
                     'id',
-                    fn($row) => trim(($row->last_name ?? '') . ', ' . ($row->first_name ?? ''))
+                    fn($row) => trim(($row->last_name ?? '') . ', ' . ($row->first_name ?? '')),
                 );
             });
     }

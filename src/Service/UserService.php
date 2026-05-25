@@ -31,6 +31,7 @@ final class UserService
                 'msg' => $linkError,
                 'scope' => ['users', 'deliveries'],
             ]);
+
             return ['success' => false, 'errors' => [$linkError]];
         }
 
@@ -88,6 +89,7 @@ final class UserService
                 'id' => $id,
                 'scope' => ['users', 'deliveries'],
             ]);
+
             return ['success' => false, 'errors' => [$linkError]];
         }
 
@@ -158,6 +160,7 @@ final class UserService
         $role = $this->fetchTable('Roles')->find()
             ->where(['Roles.id' => $roleId])
             ->first();
+
         return $role !== null && (bool)$role->is_admin;
     }
 
@@ -173,6 +176,7 @@ final class UserService
                 $flat[] = $message;
             }
         });
+
         return $flat ?: ['Datos inválidos.'];
     }
 }

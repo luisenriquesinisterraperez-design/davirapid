@@ -64,6 +64,7 @@ class UsersTable extends Table
     public function validationCreate(Validator $validator): Validator
     {
         $validator = $this->validationDefault($validator);
+
         return $validator->notEmptyString('password', 'La contraseña es requerida');
     }
 
@@ -71,17 +72,18 @@ class UsersTable extends Table
     {
         $rules->add(
             $rules->isUnique(['username'], 'Ya existe un usuario con ese nombre'),
-            'uniqueUsername'
+            'uniqueUsername',
         );
         $rules->add($rules->existsIn(['role_id'], 'Roles'));
         $rules->add(
             $rules->isUnique(
                 ['delivery_id'],
                 ['allowMultipleNulls' => true],
-                'Este repartidor ya está vinculado a otro usuario'
+                'Este repartidor ya está vinculado a otro usuario',
             ),
-            'uniqueDeliveryLink'
+            'uniqueDeliveryLink',
         );
+
         return $rules;
     }
 

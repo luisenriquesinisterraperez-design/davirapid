@@ -35,11 +35,13 @@ class UsersController extends AppController
             $lockInfo = $this->throttle->checkLockout($username);
             if ($lockInfo !== null) {
                 $this->Flash->error(
-                    sprintf('Cuenta bloqueada. Intentá de nuevo en %d %s.',
+                    sprintf(
+                        'Cuenta bloqueada. Intentá de nuevo en %d %s.',
                         $lockInfo['minutes_left'],
-                        $lockInfo['minutes_left'] === 1 ? 'minuto' : 'minutos'
-                    )
+                        $lockInfo['minutes_left'] === 1 ? 'minuto' : 'minutos',
+                    ),
                 );
+
                 return null;
             }
 
@@ -47,23 +49,26 @@ class UsersController extends AppController
             if ($result !== null && $result->isValid()) {
                 $user = $result->getData();
                 $this->throttle->recordSuccess((int)$user->id);
+
                 return $this->redirect($this->Authentication->getLoginRedirect() ?? '/');
             }
 
             $info = $this->throttle->recordFailure($username);
-            $msg = ($info['attempts_left'] !== null && $info['attempts_left'] > 0)
+            $msg = $info['attempts_left'] !== null && $info['attempts_left'] > 0
                 ? sprintf('Credenciales inválidas. Te quedan %d intentos.', $info['attempts_left'])
                 : 'Credenciales inválidas.';
             $this->Flash->error($msg);
         }
 
         $this->set('username', $username);
+
         return null;
     }
 
     public function logout()
     {
         $this->Authentication->logout();
+
         return $this->redirect(['action' => 'login']);
     }
 
@@ -102,6 +107,7 @@ class UsersController extends AppController
             $result = $this->userService->create($this->request->getData());
             if ($result['success']) {
                 $this->Flash->success('Usuario creado correctamente.');
+
                 return $this->redirect(['action' => 'index']);
             }
             $this->Flash->error(implode(' ', $result['errors'] ?? ['No se pudo crear el usuario.']));
@@ -129,6 +135,7 @@ class UsersController extends AppController
             $result = $this->userService->update($id, $this->request->getData());
             if ($result['success']) {
                 $this->Flash->success('Usuario actualizado.');
+
                 return $this->redirect(['action' => 'index']);
             }
             $this->Flash->error(implode(' ', $result['errors'] ?? ['No se pudo actualizar el usuario.']));
@@ -157,6 +164,7 @@ class UsersController extends AppController
             $user = $this->Users->get($id, contain: ['Roles']);
         } catch (RecordNotFoundException) {
             $this->Flash->error('El usuario ya no existe.');
+
             return $this->redirect(['action' => 'index']);
         }
 
@@ -171,6 +179,7 @@ class UsersController extends AppController
 
         $this->Users->deleteOrFail($user);
         $this->Flash->success('Usuario eliminado.');
+
         return $this->redirect(['action' => 'index']);
     }
 
@@ -179,6 +188,7 @@ class UsersController extends AppController
         $this->request->allowMethod(['post']);
         $this->userService->unlock($id);
         $this->Flash->success('Cuenta desbloqueada.');
+
         return $this->redirect(['action' => 'index']);
     }
 
@@ -198,13 +208,14 @@ class UsersController extends AppController
         }
         $takenIds = array_filter(array_map(
             fn($u) => (int)$u->delivery_id,
-            $takenQuery->all()->toArray()
+            $takenQuery->all()->toArray(),
         ));
 
         $query = $deliveriesTable->find('active')->find('fullNameList');
         if (!empty($takenIds)) {
             $query->where(['Deliveries.id NOT IN' => $takenIds]);
         }
+
         return $query->toArray();
     }
 

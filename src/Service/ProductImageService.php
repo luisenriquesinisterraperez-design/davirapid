@@ -6,7 +6,11 @@ namespace App\Service;
 use App\Constants\ProductConstants;
 use App\Model\Entity\Product;
 use Cake\Log\Log;
+use FilesystemIterator;
+use finfo;
 use Psr\Http\Message\UploadedFileInterface;
+use RuntimeException;
+use Throwable;
 
 final class ProductImageService
 {
@@ -36,15 +40,17 @@ final class ProductImageService
 
         try {
             $this->resize($tmp, $absolute);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             @unlink($tmp);
             @unlink($absolute);
             Log::error('Failed to resize product image: {msg}', ['msg' => $e->getMessage(), 'scope' => ['products']]);
+
             return ['success' => false, 'errors' => ['No se pudo procesar la imagen.']];
         }
         @unlink($tmp);
 
         $relative = 'uploads/products/' . $productId . '/' . $filename;
+
         return ['success' => true, 'path' => $relative];
     }
 
@@ -84,7 +90,7 @@ final class ProductImageService
             @unlink($absolute);
         }
         $dir = dirname($absolute);
-        if (is_dir($dir) && (new \FilesystemIterator($dir))->valid() === false) {
+        if (is_dir($dir) && (new FilesystemIterator($dir))->valid() === false) {
             @rmdir($dir);
         }
     }
@@ -109,7 +115,7 @@ final class ProductImageService
         $head = $stream->read(4096);
         $stream->rewind();
 
-        $finfo = new \finfo(FILEINFO_MIME_TYPE);
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
         $mime = $finfo->buffer($head) ?: '';
         if (!in_array($mime, ProductConstants::IMAGE_ALLOWED_MIME, true)) {
             $errors[] = 'Formato de imagen no permitido. Usá JPG, PNG o WebP.';
@@ -125,17 +131,17 @@ final class ProductImageService
     private function resize(string $source, string $target): void
     {
         if (!function_exists('imagecreatefromstring')) {
-            throw new \RuntimeException('GD extension is not available.');
+            throw new RuntimeException('GD extension is not available.');
         }
 
         $data = file_get_contents($source);
         if ($data === false) {
-            throw new \RuntimeException('Cannot read source image.');
+            throw new RuntimeException('Cannot read source image.');
         }
 
         $src = @imagecreatefromstring($data);
         if ($src === false) {
-            throw new \RuntimeException('Cannot decode source image.');
+            throw new RuntimeException('Cannot decode source image.');
         }
 
         $sw = imagesx($src);
@@ -156,7 +162,7 @@ final class ProductImageService
         if (!imagejpeg($dst, $target, ProductConstants::IMAGE_JPEG_QUALITY)) {
             imagedestroy($src);
             imagedestroy($dst);
-            throw new \RuntimeException('Failed to write JPEG output.');
+            throw new RuntimeException('Failed to write JPEG output.');
         }
 
         imagedestroy($src);

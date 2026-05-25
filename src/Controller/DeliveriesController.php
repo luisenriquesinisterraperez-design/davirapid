@@ -55,6 +55,7 @@ class DeliveriesController extends AppController
             $result = $this->deliveryService->create($data);
             if ($result['success']) {
                 $this->Flash->success('Repartidor creado.');
+
                 return $this->redirect(['action' => 'index']);
             }
             foreach ($result['errors'] ?? ['No se pudo crear el repartidor.'] as $msg) {
@@ -68,6 +69,7 @@ class DeliveriesController extends AppController
             ['label' => 'Repartidores', 'url' => ['action' => 'index']],
             ['label' => 'Nuevo repartidor'],
         ]);
+
         return null;
     }
 
@@ -82,6 +84,7 @@ class DeliveriesController extends AppController
             $result = $this->deliveryService->update($delivery, $data);
             if ($result['success']) {
                 $this->Flash->success('Repartidor actualizado.');
+
                 return $this->redirect(['action' => 'index']);
             }
             foreach ($result['errors'] ?? ['No se pudo actualizar el repartidor.'] as $msg) {
@@ -96,6 +99,7 @@ class DeliveriesController extends AppController
             ['label' => $delivery->full_name, 'url' => ['action' => 'view', $delivery->id]],
             ['label' => 'Editar'],
         ]);
+
         return null;
     }
 
@@ -107,6 +111,7 @@ class DeliveriesController extends AppController
             $delivery = $this->Deliveries->get($id);
         } catch (RecordNotFoundException) {
             $this->Flash->error('El repartidor ya no existe.');
+
             return $this->redirect(['action' => 'index']);
         }
 
@@ -117,6 +122,7 @@ class DeliveriesController extends AppController
         } else {
             $this->Flash->error($result['errors'][0] ?? 'No se pudo cambiar el estado.');
         }
+
         return $this->redirect($this->referer(['action' => 'index']));
     }
 

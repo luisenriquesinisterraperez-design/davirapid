@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Service\CustomerService;
+use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Query\SelectQuery;
 
 class CustomersController extends AppController
@@ -54,6 +55,7 @@ class CustomersController extends AppController
             $result = $this->customerService->create($data);
             if ($result['success']) {
                 $this->Flash->success('Cliente creado.');
+
                 return $this->redirect(['action' => 'index']);
             }
             foreach ($result['errors'] ?? ['No se pudo crear el cliente.'] as $msg) {
@@ -67,6 +69,7 @@ class CustomersController extends AppController
             ['label' => 'Clientes', 'url' => ['action' => 'index']],
             ['label' => 'Nuevo cliente'],
         ]);
+
         return null;
     }
 
@@ -81,6 +84,7 @@ class CustomersController extends AppController
             $result = $this->customerService->update($customer, $data);
             if ($result['success']) {
                 $this->Flash->success('Cliente actualizado.');
+
                 return $this->redirect(['action' => 'index']);
             }
             foreach ($result['errors'] ?? ['No se pudo actualizar el cliente.'] as $msg) {
@@ -95,6 +99,7 @@ class CustomersController extends AppController
             ['label' => $customer->name, 'url' => ['action' => 'view', $customer->id]],
             ['label' => 'Editar'],
         ]);
+
         return null;
     }
 
@@ -104,8 +109,9 @@ class CustomersController extends AppController
 
         try {
             $customer = $this->Customers->get($id);
-        } catch (\Cake\Datasource\Exception\RecordNotFoundException) {
+        } catch (RecordNotFoundException) {
             $this->Flash->error('El cliente ya no existe.');
+
             return $this->redirect(['action' => 'index']);
         }
 
@@ -115,6 +121,7 @@ class CustomersController extends AppController
         } else {
             $this->Flash->error($result['errors'][0] ?? 'No se pudo eliminar el cliente.');
         }
+
         return $this->redirect(['action' => 'index']);
     }
 
@@ -124,8 +131,9 @@ class CustomersController extends AppController
 
         try {
             $customer = $this->Customers->get($id);
-        } catch (\Cake\Datasource\Exception\RecordNotFoundException) {
+        } catch (RecordNotFoundException) {
             $this->Flash->error('El cliente ya no existe.');
+
             return $this->redirect(['action' => 'index']);
         }
 
@@ -136,6 +144,7 @@ class CustomersController extends AppController
         } else {
             $this->Flash->error($result['errors'][0] ?? 'No se pudo cambiar el estado.');
         }
+
         return $this->redirect($this->referer(['action' => 'index']));
     }
 

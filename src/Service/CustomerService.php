@@ -7,13 +7,16 @@ use App\Model\Entity\Customer;
 use Cake\Datasource\ConnectionManager;
 use Cake\Log\Log;
 use Cake\ORM\Locator\LocatorAwareTrait;
+use InvalidArgumentException;
+use RuntimeException;
+use Throwable;
 
 final class CustomerService
 {
     use LocatorAwareTrait;
 
     /**
-     * @return array{success: bool, customer?: Customer, errors?: array<string>}
+     * @return array{success: bool, customer?: \App\Model\Entity\Customer, errors?: array<string>}
      */
     public function create(array $data): array
     {
@@ -39,7 +42,7 @@ final class CustomerService
     }
 
     /**
-     * @return array{success: bool, customer?: Customer, errors?: array<string>}
+     * @return array{success: bool, customer?: \App\Model\Entity\Customer, errors?: array<string>}
      */
     public function update(Customer $customer, array $data): array
     {
@@ -95,7 +98,7 @@ final class CustomerService
     }
 
     /**
-     * @return array{success: bool, customer?: Customer, errors?: array<string>}
+     * @return array{success: bool, customer?: \App\Model\Entity\Customer, errors?: array<string>}
      */
     public function toggleActive(Customer $customer): array
     {
@@ -108,6 +111,7 @@ final class CustomerService
                 'customer' => $customer,
             ];
         }
+
         return ['success' => true, 'customer' => $customer];
     }
 
@@ -118,7 +122,7 @@ final class CustomerService
     {
         $phone = (string)($data['phone'] ?? '');
         if ($phone === '') {
-            throw new \InvalidArgumentException('phone is required');
+            throw new InvalidArgumentException('phone is required');
         }
 
         $table = $this->fetchTable('Customers');
@@ -135,9 +139,9 @@ final class CustomerService
         ]);
 
         if (!$table->save($customer)) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 'Could not auto-create customer for phone ' . $phone
-                    . ': ' . json_encode($customer->getErrors(), JSON_UNESCAPED_UNICODE)
+                    . ': ' . json_encode($customer->getErrors(), JSON_UNESCAPED_UNICODE),
             );
         }
 
@@ -164,18 +168,18 @@ final class CustomerService
                 $orders = (int)$connection
                     ->execute('SELECT COUNT(*) AS c FROM orders WHERE customer_id = :id', ['id' => $customer->id])
                     ->fetch('assoc')['c'];
-            } catch (\Throwable) {
+            } catch (Throwable) {
                 $orders = 0;
             }
         }
 
         $receivables = 0;
-        if (in_array('accounts_receivable', $existing, true)) {
+        if (in_array('receivables', $existing, true)) {
             try {
                 $receivables = (int)$connection
-                    ->execute('SELECT COUNT(*) AS c FROM accounts_receivable WHERE customer_id = :id', ['id' => $customer->id])
+                    ->execute('SELECT COUNT(*) AS c FROM receivables WHERE customer_id = :id', ['id' => $customer->id])
                     ->fetch('assoc')['c'];
-            } catch (\Throwable) {
+            } catch (Throwable) {
                 $receivables = 0;
             }
         }
@@ -194,6 +198,7 @@ final class CustomerService
                 $flat[] = $message;
             }
         });
+
         return $flat ?: ['Datos inválidos.'];
     }
 }

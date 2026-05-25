@@ -33,6 +33,7 @@ class User extends Entity implements IdentityInterface, ArrayAccess
         if ($value === null || $value === '') {
             return null;
         }
+
         return (new DefaultPasswordHasher())->hash($value);
     }
 
@@ -41,6 +42,7 @@ class User extends Entity implements IdentityInterface, ArrayAccess
         if ($this->locked_until === null) {
             return false;
         }
+
         return $this->locked_until > DateTime::now();
     }
 

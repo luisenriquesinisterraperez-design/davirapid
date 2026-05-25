@@ -8,6 +8,7 @@ use App\Service\AuthorizationService;
 use App\Service\RolePermissionService;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\ForbiddenException;
+use Cake\Log\Log;
 use Cake\ORM\Exception\PersistenceFailedException;
 
 class RolesController extends AppController
@@ -29,7 +30,7 @@ class RolesController extends AppController
     public function index(): void
     {
         $roles = $this->paginate(
-            $this->Roles->find()->contain(['Permissions', 'Users' => fn($q) => $q->select(['id', 'role_id'])])
+            $this->Roles->find()->contain(['Permissions', 'Users' => fn($q) => $q->select(['id', 'role_id'])]),
         );
         $this->set(compact('roles'));
         $this->set('moduleCatalog', AuthorizationService::MODULES);
@@ -61,6 +62,7 @@ class RolesController extends AppController
             if ($this->Roles->save($role)) {
                 $this->rolePermissions->syncMatrix((int)$role->id, is_array($matrix) ? $matrix : []);
                 $this->Flash->success('Rol creado correctamente.');
+
                 return $this->redirect(['action' => 'index']);
             }
             $this->Flash->error('No se pudo crear el rol. Revisá los datos.');
@@ -92,6 +94,7 @@ class RolesController extends AppController
             if ($this->Roles->save($role)) {
                 $this->rolePermissions->syncMatrix((int)$role->id, is_array($matrix) ? $matrix : []);
                 $this->Flash->success('Rol actualizado.');
+
                 return $this->redirect(['action' => 'index']);
             }
             $this->Flash->error('No se pudo actualizar el rol. Revisá los datos.');
@@ -115,6 +118,7 @@ class RolesController extends AppController
             $role = $this->Roles->get($id);
         } catch (RecordNotFoundException) {
             $this->Flash->error('El rol ya no existe.');
+
             return $this->redirect(['action' => 'index']);
         }
 
@@ -127,7 +131,7 @@ class RolesController extends AppController
             $this->Flash->success('Rol eliminado.');
         } catch (PersistenceFailedException $e) {
             $this->Flash->error('No se puede eliminar este rol porque tiene usuarios asignados.');
-            \Cake\Log\Log::warning('Failed to delete role {id}: {msg}', [
+            Log::warning('Failed to delete role {id}: {msg}', [
                 'id' => $id,
                 'msg' => $e->getMessage(),
                 'scope' => ['rbac'],
@@ -151,6 +155,7 @@ class RolesController extends AppController
                 'can_delete' => (bool)$perm->can_delete,
             ];
         }
+
         return $matrix;
     }
 
@@ -165,6 +170,7 @@ class RolesController extends AppController
                 'can_delete' => false,
             ];
         }
+
         return $matrix;
     }
 }

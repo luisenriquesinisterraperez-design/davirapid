@@ -8,6 +8,7 @@ use Cake\Datasource\ConnectionManager;
 use Cake\Log\Log;
 use Cake\ORM\Locator\LocatorAwareTrait;
 use Psr\Http\Message\UploadedFileInterface;
+use Throwable;
 
 final class ProductService
 {
@@ -21,7 +22,7 @@ final class ProductService
     }
 
     /**
-     * @return array{success: bool, product?: Product, errors?: array<string>}
+     * @return array{success: bool, product?: \App\Model\Entity\Product, errors?: array<string>}
      */
     public function create(array $data, ?UploadedFileInterface $image = null): array
     {
@@ -38,6 +39,7 @@ final class ProductService
 
             if (!$table->save($product)) {
                 $resultBox = ['success' => false, 'errors' => $this->flattenErrors($product->getErrors()), 'product' => $product];
+
                 return false;
             }
 
@@ -45,11 +47,13 @@ final class ProductService
                 $imgResult = $this->images->store($image, (int)$product->id);
                 if (!$imgResult['success']) {
                     $resultBox = ['success' => false, 'errors' => $imgResult['errors'] ?? ['No se pudo guardar la imagen.'], 'product' => $product];
+
                     return false;
                 }
                 $product->image_path = $imgResult['path'];
                 if (!$table->save($product)) {
                     $resultBox = ['success' => false, 'errors' => $this->flattenErrors($product->getErrors()), 'product' => $product];
+
                     return false;
                 }
             }
@@ -61,6 +65,7 @@ final class ProductService
             ]);
 
             $resultBox = ['success' => true, 'product' => $product];
+
             return true;
         });
 
@@ -68,7 +73,7 @@ final class ProductService
     }
 
     /**
-     * @return array{success: bool, product?: Product, errors?: array<string>}
+     * @return array{success: bool, product?: \App\Model\Entity\Product, errors?: array<string>}
      */
     public function update(Product $product, array $data, ?UploadedFileInterface $image = null): array
     {
@@ -84,6 +89,7 @@ final class ProductService
 
             if (!$table->save($patched)) {
                 $resultBox = ['success' => false, 'errors' => $this->flattenErrors($patched->getErrors()), 'product' => $patched];
+
                 return false;
             }
 
@@ -91,16 +97,19 @@ final class ProductService
                 $imgResult = $this->images->replace($image, $patched);
                 if (!$imgResult['success']) {
                     $resultBox = ['success' => false, 'errors' => $imgResult['errors'] ?? ['No se pudo guardar la imagen.'], 'product' => $patched];
+
                     return false;
                 }
                 $patched->image_path = $imgResult['path'];
                 if (!$table->save($patched)) {
                     $resultBox = ['success' => false, 'errors' => $this->flattenErrors($patched->getErrors()), 'product' => $patched];
+
                     return false;
                 }
             }
 
             $resultBox = ['success' => true, 'product' => $patched];
+
             return true;
         });
 
@@ -136,7 +145,7 @@ final class ProductService
     }
 
     /**
-     * @return array{success: bool, product?: Product, errors?: array<string>}
+     * @return array{success: bool, product?: \App\Model\Entity\Product, errors?: array<string>}
      */
     public function toggleActive(Product $product): array
     {
@@ -145,6 +154,7 @@ final class ProductService
         if (!$table->save($product)) {
             return ['success' => false, 'errors' => $this->flattenErrors($product->getErrors()), 'product' => $product];
         }
+
         return ['success' => true, 'product' => $product];
     }
 
@@ -158,7 +168,7 @@ final class ProductService
         if (!$locator->exists('OrderItems')) {
             try {
                 $locator->get('OrderItems');
-            } catch (\Throwable) {
+            } catch (Throwable) {
                 return false;
             }
         }
@@ -168,8 +178,9 @@ final class ProductService
                 ->find()
                 ->where(['OrderItems.product_id' => $product->id])
                 ->count();
+
             return $count > 0;
-        } catch (\Throwable) {
+        } catch (Throwable) {
             return false;
         }
     }
@@ -190,6 +201,7 @@ final class ProductService
                 $flat[] = $message;
             }
         });
+
         return $flat ?: ['Datos inválidos.'];
     }
 }

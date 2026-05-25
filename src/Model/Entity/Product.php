@@ -21,6 +21,7 @@ class Product extends Entity
         if (empty($this->image_path)) {
             return '/img/product-placeholder.svg';
         }
+
         return '/' . ltrim((string)$this->image_path, '/');
     }
 

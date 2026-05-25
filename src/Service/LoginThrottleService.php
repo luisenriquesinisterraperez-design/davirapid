@@ -37,6 +37,7 @@ final class LoginThrottleService
         $now = DateTime::now();
         if ($user->locked_until > $now) {
             $minutesLeft = (int)ceil(($user->locked_until->getTimestamp() - $now->getTimestamp()) / 60);
+
             return ['locked' => true, 'minutes_left' => max(1, $minutesLeft)];
         }
 
@@ -44,6 +45,7 @@ final class LoginThrottleService
         $user->failed_login_count = 0;
         $user->locked_until = null;
         $this->fetchTable('Users')->saveOrFail($user);
+
         return null;
     }
 
@@ -85,6 +87,7 @@ final class LoginThrottleService
                 'username' => $username,
                 'scope' => ['auth'],
             ]);
+
             return ['attempts_left' => null, 'locked_until' => null];
         }
 

@@ -39,10 +39,11 @@ class CustomersTable extends Table
         $rules->add(
             $rules->isUnique(
                 ['phone'],
-                ['message' => 'Ya existe un cliente con este teléfono']
+                ['message' => 'Ya existe un cliente con este teléfono'],
             ),
-            'uniquePhone'
+            'uniquePhone',
         );
+
         return $rules;
     }
 
@@ -54,6 +55,7 @@ class CustomersTable extends Table
     public function findByPhone(SelectQuery $query, array $options = []): SelectQuery
     {
         $phone = (string)($options['phone'] ?? '');
+
         return $query->where(['Customers.phone' => $phone]);
     }
 }

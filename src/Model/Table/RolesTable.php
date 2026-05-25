@@ -41,8 +41,9 @@ class RolesTable extends Table
     {
         $rules->add(
             $rules->isUnique(['name'], 'Ya existe un rol con ese nombre'),
-            'uniqueName'
+            'uniqueName',
         );
+
         return $rules;
     }
 
