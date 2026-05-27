@@ -1,0 +1,43 @@
+# Docker Compose para Dokploy
+#
+# La base de datos vive en un contenedor externo (otra app de Dokploy).
+# Conectar este servicio a la red Docker de esa DB desde el panel de Dokploy,
+# o ajustar DATABASE_URL para apuntar al host correspondiente.
+#
+# Variables esperadas (definir en el panel de Dokploy):
+#   APP_FULL_BASE_URL  - URL pública (ej: https://admin.davirapid.com)
+#   SECURITY_SALT      - cadena aleatoria (>= 32 chars)
+#   DEBUG              - false en producción
+#   DATABASE_URL       - DSN MySQL, ej:
+#                        mysql://user:pass@db-host:3306/davirapid?encoding=utf8mb4&timezone=UTC
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: davirapid-admin:latest
+    restart: unless-stopped
+    environment:
+      DEBUG: "${DEBUG:-false}"
+      APP_FULL_BASE_URL: "${APP_FULL_BASE_URL}"
+      SECURITY_SALT: "${SECURITY_SALT}"
+      DATABASE_URL: "${DATABASE_URL}"
+      CLEAR_CACHE: "1"
+    volumes:
+      - app_tmp:/var/www/html/tmp
+      - app_logs:/var/www/html/logs
+      - app_uploads:/var/www/html/webroot/uploads
+    ports:
+      - "8080"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  app_tmp:
+  app_logs:
+  app_uploads:
